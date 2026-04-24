@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEOCORE | Elite Hardware</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #030508;
+            --surface: rgba(20, 22, 28, 0.6);
+            --silver: #e2e8f0;
+            --text-muted: #94a3b8;
+            --neon-blue: #00f2ff;
+            --neon-purple: #b026ff;
+            --neon-glow: 0 0 25px rgba(0, 242, 255, 0.5);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.05);
+            --danger-red: #ff4444;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: #1e222b; border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--neon-blue); }
+
+        body { background-color: var(--bg-color); color: var(--silver); font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        body::before { content: ''; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(0,242,255,0.03) 0%, transparent 60%); z-index: -1; pointer-events: none; }
+
+        header { background: rgba(3, 5, 8, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 20px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: var(--glass-border); position: sticky; top: 0; z-index: 100; transition: 0.3s; }
+        .logo-img { height: 50px; cursor: pointer; transition: 0.3s; }
+        .logo-img:hover { transform: scale(1.05); }
+        
+        .nav-buttons { display: flex; gap: 15px; align-items: center; }
+        .btn { padding: 10px 24px; background: transparent; color: #fff; border: var(--glass-border); border-radius: 12px; cursor: pointer; font-weight: 500; font-size: 14px; transition: all 0.3s ease; backdrop-filter: blur(5px); }
+        .btn:hover { border-color: var(--neon-blue); box-shadow: var(--neon-glow); color: var(--neon-blue); transform: translateY(-2px); }
+        .btn-fill { background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple)); color: #000; border: none; font-weight: 800; }
+        .btn-fill:hover { box-shadow: 0 0 30px rgba(176, 38, 255, 0.4); color: #fff; }
+        
+        .user-greeting { color: var(--silver); font-weight: 500; display: none; padding-right: 15px; border-right: 1px solid #333; }
+        .admin-only { display: none; border-color: var(--neon-purple); color: var(--neon-purple); }
+
+        .admin-product-ctrl { background: rgba(176, 38, 255, 0.1); border: 1px solid var(--neon-purple); padding: 15px; border-radius: 12px; margin-bottom: 20px; display: none; gap: 10px; }
+        .btn-danger { border-color: var(--danger-red); color: var(--danger-red); }
+        .btn-danger:hover { background: var(--danger-red); color: white; box-shadow: 0 0 15px var(--danger-red); }
+
+        #mainPage { transition: opacity 0.5s ease; }
+        .hero { text-align: center; padding: 120px 20px 80px; position: relative; border-bottom: var(--glass-border); }
+        .hero::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 100px; height: 3px; background: var(--neon-blue); box-shadow: var(--neon-glow); }
+        .hero h1 { font-size: 5vw; line-height: 1.1; margin-bottom: 20px; font-weight: 900; letter-spacing: -2px; }
+        .hero h1 span { background: linear-gradient(135deg, #fff, #555); -webkit-background-clip: text; color: transparent; }
+        .hero p { color: var(--text-muted); font-size: 20px; max-width: 700px; margin: 0 auto; font-weight: 300; line-height: 1.6; }
+        
+        .empty-grid-msg { grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 50px; font-size: 18px; border: 1px dashed #333; border-radius: 16px; }
+
+        .container { max-width: 1400px; margin: 60px auto; padding: 0 20px; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 40px; }
+        
+        .card { background: var(--surface); border-radius: 24px; overflow: hidden; cursor: pointer; transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1); border: var(--glass-border); position: relative; backdrop-filter: blur(10px); }
+        .card::before { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(to right, transparent, rgba(255,255,255,0.05), transparent); transform: skewX(-20deg); transition: 0.5s; z-index: 3; pointer-events: none; }
+        .card:hover::before { left: 150%; }
+        .card:hover { transform: translateY(-12px) scale(1.02); border-color: rgba(0, 242, 255, 0.3); box-shadow: 0 20px 40px rgba(0,0,0,0.5), var(--neon-glow); z-index: 2; }
+        
+        .card img { width: 100%; height: 280px; object-fit: cover; transition: transform 0.7s ease; border-bottom: var(--glass-border); }
+        .card:hover img { transform: scale(1.08); }
+        .card-info { padding: 25px; position: relative; z-index: 2; background: linear-gradient(to top, #0a0b10, transparent); }
+        .price { color: var(--neon-blue); font-size: 24px; font-weight: 900; margin-bottom: 8px; letter-spacing: 1px; }
+        .title { font-size: 18px; color: #fff; font-weight: 500; line-height: 1.4; }
+
+        .full-page { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg-color); z-index: 2000; display: none; overflow-y: auto; opacity: 0; transition: opacity 0.4s ease; }
+        .back-nav { padding: 20px 5%; background: rgba(3,5,8,0.9); backdrop-filter: blur(15px); position: sticky; top: 0; border-bottom: var(--glass-border); z-index: 10; display: flex; justify-content: space-between; align-items: center; }
+        .back-btn { color: var(--text-muted); background: transparent; border: none; font-size: 16px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
+        .back-btn:hover { color: var(--neon-blue); transform: translateX(-5px); }
+        
+        .full-container { max-width: 1400px; margin: 40px auto; padding: 0 20px; display: flex; gap: 60px; align-items: flex-start; }
+        .full-image-col { flex: 1.2; border-radius: 24px; overflow: hidden; border: var(--glass-border); position: sticky; top: 100px; background: #000; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .full-image-col img { width: 100%; object-fit: cover; display: block; }
+        .full-details-col { flex: 1; padding-bottom: 50px; }
+
+        .f-title { font-size: 48px; color: #fff; font-weight: 900; margin-bottom: 10px; line-height: 1.1; letter-spacing: -1px; }
+        .f-price { font-size: 40px; background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple)); -webkit-background-clip: text; color: transparent; font-weight: 900; margin-bottom: 40px; }
+        .f-section { background: var(--surface); padding: 30px; border-radius: 20px; margin-bottom: 25px; border: var(--glass-border); backdrop-filter: blur(10px); }
+        .f-section h3 { color: #fff; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; font-size: 14px; }
+        .f-section h3::before { content: ''; width: 8px; height: 8px; background: var(--neon-blue); border-radius: 50%; box-shadow: var(--neon-glow); }
+
+        .form-title { font-size: 36px; font-weight: 900; color: #fff; margin-bottom: 10px; }
+        .form-group { margin-bottom: 25px; }
+        .form-group label { display: block; margin-bottom: 10px; color: var(--text-muted); font-size: 12px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 18px; background: rgba(0,0,0,0.3); border: var(--glass-border); color: #fff; border-radius: 12px; font-size: 16px; outline: none; transition: 0.3s; font-family: inherit; }
+        .form-group input:focus, .form-group textarea:focus { border-color: var(--neon-blue); background: rgba(0,242,255,0.02); box-shadow: 0 0 15px rgba(0,242,255,0.1); }
+        
+        input[type="file"] { display: none; }
+        .file-upload-btn { display: inline-block; width: 100%; text-align: center; padding: 20px; background: rgba(0,0,0,0.3); border: 2px dashed #333; color: var(--text-muted); border-radius: 12px; cursor: pointer; font-size: 16px; transition: 0.3s; font-weight: 500; }
+        .file-upload-btn:hover { border-color: var(--neon-blue); color: var(--neon-blue); background: rgba(0,242,255,0.05); }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 3000; justify-content: center; align-items: center; }
+        .modal-content { background: #0b0d14; padding: 40px; border-radius: 24px; border: 1px solid rgba(0,242,255,0.2); width: 90%; max-width: 450px; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.5), var(--neon-glow); }
+        .close-btn { position: absolute; top: 20px; right: 25px; font-size: 32px; cursor: pointer; color: #555; transition: 0.3s; line-height: 1; }
+        .close-btn:hover { color: #fff; transform: rotate(90deg); }
+        
+        .auth-tabs { display: flex; margin-bottom: 30px; background: rgba(255,255,255,0.03); border-radius: 12px; padding: 5px; }
+        .auth-tab { flex: 1; text-align: center; padding: 12px; cursor: pointer; color: var(--text-muted); font-weight: 800; border-radius: 8px; font-size: 14px; text-transform: uppercase; transition: 0.3s; }
+        .auth-tab.active { background: var(--surface); color: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+
+        .dashboard-stat { background: rgba(255,255,255,0.02); padding: 30px; border-radius: 16px; border: var(--glass-border); text-align: center; margin-bottom: 20px; transition: 0.3s; }
+        .dashboard-stat:hover { border-color: var(--neon-purple); transform: translateY(-5px); }
+        .stat-number { font-size: 56px; background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple)); -webkit-background-clip: text; color: transparent; font-weight: 900; line-height: 1; margin-bottom: 10px; }
+        
+        @media (max-width: 900px) {
+            .hero h1 { font-size: 40px; }
+            .full-container { flex-direction: column; gap: 30px; }
+            .full-image-col { position: relative; top: 0; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="mainPage">
+    <header>
+        <img src="https://r.jina.ai/i/6f9036c191a2434da1909a850125712e" class="logo-img" alt="NEOCORE" onclick="location.reload()">
+        <div class="nav-buttons">
+            <span class="user-greeting" id="userGreeting">Привет, Имя!</span>
+            <button class="btn btn-fill" id="btnOpenAuth" onclick="openAuthModal()">Вход / Регистрация</button>
+            <button class="btn admin-only" onclick="openAdminDashboard()">Аналитика</button>
+            <button class="btn admin-only" onclick="openAddPage()">+ Добавить товар</button>
+            <button class="btn" id="btnLogout" style="display:none;" onclick="logout()">Выйти</button>
+        </div>
+    </header>
+
+    <div class="hero">
+        <h1>ЭСТЕТИКА <br><span>ТЕХНОЛОГИЙ</span></h1>
+        <p>Маркетплейс премиального компьютерного железа. Эксклюзивные сборки, строгий дизайн, бескомпромиссная мощность.</p>
+    </div>
+
+    <div class="container">
+        <div class="product-grid" id="productGrid">
+            </div>
+    </div>
+</div>
+
+<div id="productPage" class="full-page">
+    <div class="back-nav">
+        <button class="back-btn" onclick="closeFullPage('productPage')">← Назад к витрине</button>
+    </div>
+    <div class="full-container">
+        <div class="full-image-col"><img id="fImage" src="" alt="Товар"></div>
+        <div class="full-details-col">
+            
+            <div id="adminProductCtrl" class="admin-product-ctrl admin-only">
+                <button class="btn" onclick="editCurrentProduct()">Изменить лот</button>
+                <button class="btn btn-danger" onclick="deleteCurrentProduct()">Удалить навсегда</button>
+            </div>
+
+            <h1 class="f-title" id="fTitle">Название</h1>
+            <div class="f-price" id="fPrice">Цена</div>
+            <div class="f-section"><h3>Связь с продавцом</h3><div id="fContact" style="font-size: 22px; color:#fff; font-weight:900;"></div></div>
+            <div class="f-section"><h3>Описание</h3><div id="fDesc" style="color:#cbd5e1; line-height: 1.8; font-size: 16px;"></div></div>
+            <div class="f-section"><h3>Характеристики</h3><div id="fSpecs" style="color:#cbd5e1; line-height: 1.8; font-size: 16px;"></div></div>
+        </div>
+    </div>
+</div>
+
+<div id="addPage" class="full-page">
+    <div class="back-nav">
+        <button class="back-btn" onclick="closeFullPage('addPage')">← Отмена</button>
+        <button class="btn btn-fill" id="submitProductBtn" style="padding: 12px 40px; font-size: 16px; letter-spacing: 1px;" onclick="saveProduct()">Опубликовать</button>
+    </div>
+    <div class="full-container">
+        <div class="full-image-col" style="display:flex; align-items:center; justify-content:center; min-height:500px;">
+            <img id="previewImage" src="https://via.placeholder.com/800x800/0a0b10/333?text=ФОТО" alt="Превью" style="max-height:800px; width:auto;">
+        </div>
+        <div class="full-details-col">
+            <h1 class="form-title" id="addPageTitle">Новый лот</h1>
+            <p style="color: var(--text-muted); margin-bottom: 30px;">Заполните поля ниже. Оптимальный размер фото - до 1Мб.</p>
+            
+            <input type="hidden" id="pEditId" value="">
+
+            <div class="form-group">
+                <label>Фотография товара</label>
+                <label class="file-upload-btn">
+                    + Загрузить фотографию
+                    <input type="file" id="pImageFile" accept="image/*">
+                </label>
+            </div>
+            <div class="form-group"><label>Название</label><input type="text" id="pTitle" placeholder="RTX 4090 Founders Edition"></div>
+            <div class="form-group"><label>Стоимость</label><input type="text" id="pPrice" placeholder="250 000 ₽"></div>
+            <div class="form-group"><label>Описание</label><textarea id="pDesc" rows="4" placeholder="Идеальное состояние, полный комплект..."></textarea></div>
+            <div class="form-group"><label>Спецификации</label><textarea id="pSpecs" rows="4" placeholder="Память: 24GB GDDR6X..."></textarea></div>
+            <div class="form-group"><label>Ваши Контакты (ТГ, Телефон)</label><input type="text" id="pContact" placeholder="@telegram_nick"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="authModal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeAllModals()">&times;</span>
+        <div class="auth-tabs">
+            <div class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Вход</div>
+            <div class="auth-tab" id="tabReg" onclick="switchAuthTab('reg')">Регистрация</div>
+        </div>
+        <div id="loginForm">
+            <div class="form-group"><label>Ваш Логин</label><input type="text" id="lUser"></div>
+            <div class="form-group"><label>Пароль</label><input type="password" id="lPass"></div>
+            <button class="btn btn-fill" style="width:100%; padding:16px; margin-top:10px;" onclick="doLogin()">Войти в систему</button>
+            </div>
+        <div id="regForm" style="display:none;">
+            <div class="form-group"><label>Придумайте Логин</label><input type="text" id="rUser"></div>
+            <div class="form-group"><label>Придумайте Пароль</label><input type="password" id="rPass"></div>
+            <button class="btn" style="width:100%; padding:16px; margin-top:10px; border-color:var(--text-muted);" onclick="doRegister()">Создать аккаунт</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="adminModal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeAllModals()">&times;</span>
+        <h2 style="color:white; text-align:center; margin-bottom:30px; font-weight:900;">СИСТЕМА</h2>
+        <div class="dashboard-stat"><div class="stat-number" id="visitCount">0</div><div style="color:var(--text-muted); font-weight:800; text-transform:uppercase; font-size:12px;">Трафик за сегодня</div></div>
+        <div class="dashboard-stat"><div class="stat-number" id="userCount">0</div><div style="color:var(--text-muted); font-weight:800; text-transform:uppercase; font-size:12px;">Аккаунтов в базе</div></div>
+    </div>
+</div>
+
+<script>
+    const todayDate = new Date().toISOString().split('T')[0];
+    const visitKey = 'neocore_visits_' + todayDate;
+    
+    if (!sessionStorage.getItem('visited_today')) {
+        localStorage.setItem(visitKey, parseInt(localStorage.getItem(visitKey) || '0') + 1);
+        sessionStorage.setItem('visited_today', 'true');
+    }
+
+    // --- БАЗА ПОЛЬЗОВАТЕЛЕЙ И НОВЫЙ АДМИН ---
+    let usersDB = JSON.parse(localStorage.getItem('neocore_users')) || [];
+    
+    // Если в базе нет нового админа sasha2012, добавляем его.
+    // Если старый admin остался, он уже не будет считаться главным, ты заходишь под sasha2012.
+    if (!usersDB.find(u => u.login === 'sasha2012')) {
+        usersDB.push({ login: 'sasha2012', pass: 'sasha2012', role: 'admin' });
+        localStorage.setItem('neocore_users', JSON.stringify(usersDB));
+    }
+    
+    let currentUser = JSON.parse(sessionStorage.getItem('neocore_current_user')) || null;
+
+    function updateUI() {
+        const btnAuth = document.getElementById('btnOpenAuth');
+        const greeting = document.getElementById('userGreeting');
+        const btnLogout = document.getElementById('btnLogout');
+        const adminElements = document.querySelectorAll('.admin-only');
+
+        if (currentUser) {
+            btnAuth.style.display = 'none'; 
+            greeting.style.display = 'block'; 
+            greeting.innerText = 'Привет, ' + currentUser.login + '!'; 
+            btnLogout.style.display = 'block';
+            
+            if (currentUser.role === 'admin') {
+                adminElements.forEach(el => {
+                    if (el.id === 'adminProductCtrl') {
+                        el.style.display = 'flex';
+                    } else {
+                        el.style.display = 'inline-block';
+                    }
+                });
+            } else {
+                adminElements.forEach(el => el.style.display = 'none');
+            }
+        } else {
+            btnAuth.style.display = 'block'; 
+            greeting.style.display = 'none'; 
+            btnLogout.style.display = 'none';
+            adminElements.forEach(el => el.style.display = 'none');
+        }
+    }
+
+    function switchAuthTab(tab) {
+        document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+        document.getElementById('tabReg').classList.toggle('active', tab === 'reg');
+        document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+        document.getElementById('regForm').style.display = tab === 'reg' ? 'block' : 'none';
+    }
+
+    function doRegister() {
+        const u = document.getElementById('rUser').value.trim();
+        const p = document.getElementById('rPass').value.trim();
+        if (!u || !p) return alert("Заполните все поля!");
+        if (usersDB.find(user => user.login === u)) return alert("Логин занят!");
+        
+        usersDB.push({ login: u, pass: p, role: 'user' }); 
+        localStorage.setItem('neocore_users', JSON.stringify(usersDB));
+        alert("Успешно! Теперь войдите."); 
+        switchAuthTab('login');
+    }
+
+    function doLogin() {
+        const u = document.getElementById('lUser').value.trim();
+        const p = document.getElementById('lPass').value.trim();
+        const user = usersDB.find(user => user.login === u && user.pass === p);
+        if (user) { 
+            currentUser = { login: user.login, role: user.role }; 
+            sessionStorage.setItem('neocore_current_user', JSON.stringify(currentUser)); 
+            closeAllModals(); 
+            updateUI(); 
+        } 
+        else { alert("Неверный логин или пароль!"); }
+    }
+
+    function logout() { 
+        currentUser = null; 
+        sessionStorage.removeItem('neocore_current_user'); 
+        updateUI(); 
+        if(document.getElementById('addPage').style.display === 'block') { closeFullPage('addPage'); }
+        document.getElementById('adminProductCtrl').style.display = 'none';
+    }
+
+    function openAdminDashboard() {
+        document.getElementById('visitCount').innerText = localStorage.getItem(visitKey) || '0';
+        document.getElementById('userCount').innerText = usersDB.length;
+        document.getElementById('adminModal').style.display = 'flex';
+    }
+
+    // Дефолтный товар (чтобы витрина не была пустой)
+    const defaultProducts = [{
+        id: 1,
+        title: "Phenom II Legacy Edition | GTX 550Ti",
+        price: "18 500 ₽",
+        image: "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=800",
+        desc: "Легендарная сборка на базе AMD Phenom. Идеально для классики (World of Tanks, CS, Dota). Собрано в новом эстетичном корпусе специально для NEOCORE.",
+        specs: "Процессор: AMD Phenom II X4\nВидеокарта: GTX 550 Ti\nСостояние: Отличное, протестирован в стресс-тестах.",
+        contact: "Писать в ЛС Авито / Омск"
+    }];
+
+    let products = JSON.parse(localStorage.getItem('neocore_products')) || defaultProducts;
+    let currentUploadedImageBase64 = "";
+    let currentViewedProductId = null;
+
+    function renderGrid() {
+        const grid = document.getElementById('productGrid'); 
+        grid.innerHTML = '';
+        
+        if (products.length === 0) {
+            grid.innerHTML = `<div class="empty-grid-msg">На витрине пока нет лотов. Админ может добавить их кнопкой сверху.</div>`;
+            return;
+        }
+
+        products.forEach(p => {
+            const imgSrc = p.image ? p.image : "https://via.placeholder.com/600x400/0a0b10/00f2ff?text=No+Photo";
+            grid.innerHTML += `
+                <div class="card" onclick="openProduct(${p.id})">
+                    <img src="${imgSrc}" alt="${p.title}">
+                    <div class="card-info">
+                        <div class="price">${p.price}</div>
+                        <div class="title">${p.title}</div>
+                    </div>
+                </div>`;
+        });
+    }
+
+    document.getElementById('pImageFile').addEventListener('change', function(event) {
+        const file = event.target.files[0]; 
+        if (!file) return;
+        if (file.size > 1500000) {
+            alert("Файл слишком большой! Пожалуйста, выберите фото до 1Мб.");
+            this.value = ""; 
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) { 
+            currentUploadedImageBase64 = e.target.result; 
+            document.getElementById('previewImage').src = currentUploadedImageBase64; 
+        };
+        reader.readAsDataURL(file);
+    });
+
+    function saveProduct() {
+        const title = document.getElementById('pTitle').value.trim();
+        const price = document.getElementById('pPrice').value.trim();
+        const desc = document.getElementById('pDesc').value.trim();
+        const specs = document.getElementById('pSpecs').value.trim();
+        const contact = document.getElementById('pContact').value.trim();
+        const editId = document.getElementById('pEditId').value;
+
+        if (!title || !price) return alert("Название и цена обязательны!");
+
+        try {
+            if (editId) {
+                const index = products.findIndex(p => p.id == editId);
+                if (index !== -1) {
+                    products[index].title = title;
+                    products[index].price = price;
+                    products[index].desc = desc;
+                    products[index].specs = specs;
+                    products[index].contact = contact;
+                    if (currentUploadedImageBase64) products[index].image = currentUploadedImageBase64;
+                    alert("Лот обновлен!");
+                }
+            } else {
+                if (!currentUploadedImageBase64) return alert("Пожалуйста, загрузите фотографию товара.");
+                products.unshift({
+                    id: Date.now(), title: title, price: price,
+                    image: currentUploadedImageBase64, desc: desc || "-", specs: specs || "-", contact: contact || "-"
+                });
+                alert("Лот опубликован!");
+            }
+
+            localStorage.setItem('neocore_products', JSON.stringify(products));
+            clearAddForm();
+            closeFullPage('addPage'); 
+            renderGrid();
+            if(editId) openProduct(editId);
+
+        } catch (error) { 
+            console.error(error);
+            alert("Ошибка сохранения! Возможно, фотография слишком большая."); 
+        }
+    }
+
+    function deleteCurrentProduct() {
+        if (!currentViewedProductId) return;
+        if (confirm("Вы уверены, что хотите НАВСЕГДА удалить этот лот?")) {
+            products = products.filter(p => p.id !== currentViewedProductId);
+            localStorage.setItem('neocore_products', JSON.stringify(products));
+            alert("Лот удален.");
+            closeFullPage('productPage');
+            renderGrid();
+        }
+    }
+
+    function editCurrentProduct() {
+        const p = products.find(item => item.id === currentViewedProductId);
+        if (!p) return;
+        document.getElementById('pEditId').value = p.id;
+        document.getElementById('pTitle').value = p.title;
+        document.getElementById('pPrice').value = p.price;
+        document.getElementById('pDesc').value = p.desc;
+        document.getElementById('pSpecs').value = p.specs;
+        document.getElementById('pContact').value = p.contact;
+        document.getElementById('previewImage').src = p.image;
+        document.getElementById('addPageTitle').innerText = "Редактирование лота";
+        document.getElementById('submitProductBtn').innerText = "Сохранить изменения";
+        closeFullPage('productPage');
+        openFullPage('addPage');
+        currentUploadedImageBase64 = "";
+    }
+
+    function clearAddForm() {
+        document.getElementById('pEditId').value = "";
+        ['pTitle', 'pPrice', 'pDesc', 'pSpecs', 'pContact', 'pImageFile'].forEach(id => document.getElementById(id).value = '');
+        currentUploadedImageBase64 = ""; 
+        document.getElementById('previewImage').src = "https://via.placeholder.com/800x800/0a0b10/333?text=ФОТО";
+        document.getElementById('addPageTitle').innerText = "Новый лот";
+        document.getElementById('submitProductBtn').innerText = "Опубликовать";
+    }
+
+    function openFullPage(pageId) { 
+        document.getElementById('mainPage').style.display = 'none'; 
+        const page = document.getElementById(pageId); 
+        page.style.display = 'block'; 
+        setTimeout(() => page.style.opacity = '1', 50); 
+        window.scrollTo(0,0); 
+    }
+
+    function closeFullPage(pageId) { 
+        const page = document.getElementById(pageId); 
+        page.style.opacity = '0'; 
+        setTimeout(() => { 
+            page.style.display = 'none'; 
+            document.getElementById('mainPage').style.display = 'block'; 
+        }, 400); 
+    }
+
+    function openProduct(id) {
+        const p = products.find(item => item.id === id); 
+        if(!p) return;
+        currentViewedProductId = id; 
+        document.getElementById('fImage').src = p.image;
+        document.getElementById('fTitle').innerText = p.title; 
+        document.getElementById('fPrice').innerText = p.price;
+        document.getElementById('fDesc').innerHTML = p.desc.replace(/\n/g, '<br>'); 
+        document.getElementById('fSpecs').innerHTML = p.specs.replace(/\n/g, '<br>'); 
+        document.getElementById('fContact').innerText = p.contact;
+        openFullPage('productPage');
+        if (currentUser && currentUser.role === 'admin') {
+            document.getElementById('adminProductCtrl').style.display = 'flex';
+        } else {
+            document.getElementById('adminProductCtrl').style.display = 'none';
+        }
+    }
+
+    function openAddPage() { clearAddForm(); openFullPage('addPage'); }
+    function openAuthModal() { document.getElementById('authModal').style.display = 'flex'; }
+    function closeAllModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
+    window.onclick = e => { if (e.target.classList.contains('modal')) closeAllModals(); }
+
+    renderGrid(); 
+    updateUI();
+</script>
+
+</body>
+</html>
